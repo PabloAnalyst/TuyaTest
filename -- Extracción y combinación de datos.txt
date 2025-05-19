@@ -1,0 +1,100 @@
+-- Extracción y combinación de datos
+
+-- 1) # Total ordenes registradas
+
+SELECT COUNT(*) AS total_ordenes
+FROM orden;
+
+-- 2) # Total Clientes entre 01-01-2021-HOY
+
+SELECT COUNT(DISTINCT cedula) AS clientes_activos
+FROM orden
+WHERE fecha_orden BETWEEN '2021-01-01' AND CURRENT_DATE();
+
+
+-- 3) Lista clientes cantidad de ordenes, mayor a menor 
+
+SELECT 
+    c.cedula,
+    c.nombre,
+    COUNT(o.id_orden) AS total_ordenes
+FROM cliente c
+LEFT JOIN orden o ON c.cedula = o.cedula
+GROUP BY c.cedula, c.nombre
+ORDER BY total_ordenes DESC;
+
+
+-- 4) Detalle, pedido mas grande en valor 2020
+
+SELECT 
+    c.cedula,
+    c.nombre AS nombre_cliente,
+    o.fecha_orden,
+    p.nombre_producto,
+    d.cantidad
+FROM orden o
+JOIN cliente c ON o.cedula = c.cedula
+JOIN detalle_orden d ON o.id_orden = d.id_orden
+JOIN producto p ON d.id_producto = p.id_producto
+WHERE YEAR(o.fecha_orden) = 2020
+AND o.total_pedido = (
+    SELECT MAX(total_pedido)
+    FROM orden
+    WHERE YEAR(fecha_orden) = 2020
+);
+
+
+-- 5) Valor total vendido por mes y año.
+
+
+SELECT 
+    YEAR(fecha_orden) AS anio,
+    MONTH(fecha_orden) AS mes,
+    SUM(total_pedido) AS total_vendido
+FROM orden
+GROUP BY anio, mes
+ORDER BY anio, mes;
+
+-- 6) Cliente especifico, especificando cada producto, # de veces y valor gastado. ordenado Asc
+
+SELECT 
+    p.nombre_producto,
+    COUNT(*) AS veces_comprado,
+    SUM(d.precio_unitario * d.cantidad) AS valor_total
+FROM orden o
+JOIN detalle_orden d ON o.id_orden = d.id_orden
+JOIN producto p ON d.id_producto = p.id_producto
+WHERE o.cedula = 123456
+GROUP BY p.id_producto, p.nombre_producto
+ORDER BY valor_total DESC;
+
+
+-- 7) Actualizar tabla historica
+
+-- Para no alterar la naturaleza de la dat se crea una nueva temporal y se instertan los datos
+
+CREATE TABLE historico_temp (
+    cedula INT,
+    nombre VARCHAR(40),
+    telefono VARCHAR(20),
+    fecha DATE,
+    producto VARCHAR(50),
+    cantidad INT,
+    ciudad VARCHAR(50) -- nueva columna
+);
+
+
+-- Insertar datos antiguos (sin ciudad) con valor NULL
+INSERT INTO historico_temp (cedula, nombre, telefono, fecha, producto, cantidad, ciudad)
+SELECT cedula, nombre, telefono, fecha, producto, cantidad, NULL
+FROM historico;
+
+-- Insertar datos nuevos (incluyen ciudad)
+INSERT INTO historico_temp (cedula, nombre, telefono, fecha, producto, cantidad, ciudad)
+SELECT cedula, nombre, telefono, fecha, producto, cantidad, ciudad
+FROM nuevos_datos;
+
+-- Opcional: renombrar tablas si se va a reemplazar
+-- RENAME TABLE historico TO historico_old, historico_temp TO historico;
+
+
