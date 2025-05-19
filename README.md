@@ -5,18 +5,18 @@
 - Analizar los datos de productividad de empleados que trabajan a medio tiempo, tiempo completo y fines de semana.
 - Identificar, mediante métricas como rendimiento y rentabilidad, los grupos de empleados más productivos.
 - Aplicar aprendizaje no supervisado (clustering) para segmentar a los empleados según características comunes.
-- Visualizar los resultados en un tablero interactivo (Power BI) para facilitar la toma de decisiones.
+- Visualizar los resultados en un tablero interactivo para facilitar la toma de decisiones.
 
 ---
 
 ## ⚙️ Proceso Metodológico
 
 ### 1. **Limpieza y Preparación de Datos**
-- Se realizó la depuración de registros nulos y estandarización de columnas en ambos archivos.
+- Se realizó la depuración de registros nulos y validacion de informacion
 - Transformaciones necesarias para calcular métricas clave de productividad.
 
 ### 2. **Análisis de Productividad**
-- Cálculo de indicadores como tiempo trabajado, tareas completadas, y rentabilidad por tipo de jornada.
+- Generacion de visualizaciones para evaluar productividad por Jornada laboral antiguedad
 - Comparación entre empleados de jornada completa, medio tiempo y fines de semana.
 
 ### 3. **Modelo de Segmentación (No Supervisado)**
